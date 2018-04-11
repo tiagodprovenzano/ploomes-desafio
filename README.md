@@ -21,36 +21,48 @@
   <li>Departamento (api, da pra add)</li>
 </ul>
 
+<h4>Outras infos (col)</h4>
+<ul>
+  <li>CPF (input controlado)</li>
+  <li>Responsavel (team) </li>
+  <li>data de nasc. (input controlado)</li>
+  <li>Obs (campo livre)</li>
+</ul>
 
-Outras infos (col)
-CPF (input controlado)
-Responsavel (team) 
-Obs (campo livre)
-data de nasc. (input controlado)
+<h3>Cadastro Empresa:</h3>
+<h4>Principal</h4>
+<ul>
+  <li>Nome(*) (campo Livre)</li>
+  <li>Razão Social (campo livre)</li>
+  <li>Segmento (api, da pra add)</li>
+  <li>Origem (api, da pra add)(do contato)</li>
+  <li>CNPJ (campo controlado)</li>
+  <li>Telefones (+)(campo controlado)/não controlado (opção usuário)</li>
+  <li>tipo telefone:(api, não dá pra add)</li>
+</ul>
 
-Cadastro Empresa:
+<h4>Localização (col)</h4>
+<ul>
+  <li>Endereço (api google, auto complete(sugestoes))</li>
+  <li>Complemento</li>
+  <li>Bairro</li>
+  <li>CEP</li>
+  <li>Cidade</li>
+  <li>Estado</li>
+  <li>País</li>
+</ul>
 
-Nome(*) (campo Livre)
-Razão Social (campo livre)
-Segmento (api, da pra add)
-Origem (api, da pra add)(do contato)
-CNPJ (campo controlado)
-telefones (+)(campo controlado)/não controlado (opção usuário) 
-tipo telefone:(api, não dá pra add)
+<h4>Outras infos:</h4>
+<ul>
+  <li>E-mail (campo livre)</li>
+  <li>Site(campo Livre)</li>
+  <li>Responsável (team)(sugestão membro equipe)</li>
+  <li>Relação (api, não da pra add)</li>
+  <li>Obs (campo livre)</li>
+</ul>
 
-
-Localização (col)
-	Endereço (api google, auto complete(sugestoes))
-	Complemento
-	Bairro
-	CEP
-	Cidade
-	Estado
-	País
-
-Outras infos:
-	E-mail (campo livre)
-	Site(campo Livre)
-	Responsável (team)(sugestão membro equipe)
-	Relação (api, não da pra add)
-	Obs (campo livre)
+	
+	
+	
+	
+	

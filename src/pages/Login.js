@@ -4,32 +4,54 @@ import {connect} from 'react-redux'
 import estilos from '../components/estilos.js'
 import {width, height} from 'react-native-dimension'
 import { Ionicons } from '@expo/vector-icons';
+import {emailValidation} from '../components/library'
 
-import { mudaEmail, mudaSenha } from '../actions/AppActions'
+import { mudaEmail, mudaSenha, mudaUserKey, mudaPhoneTypes } from '../actions/AppActions'
 
 export class Login extends Component{
+    state={
+        mensagemEmail:""
+    }
+
     login(data){
         data = JSON.stringify(data);
+         
+        fetch('https://api2-dev.ploomes.com/Self/Login', {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+            },
+            body: data,
+        })
+        .then((response) => response.json())
+        .then((responseJson) => {
+            if(typeof responseJson.value === 'string'){
+                console.log('login failed');
+                console.log(responseJson.value)
+                
+              }else if(typeof responseJson.value === 'object'){
+                console.log('login succesful')
+                this.props.mudaUserKey(responseJson.value[0].UserKey)
+              }
+
+        })
+        .catch((error) => {
+            console.error(error);
+        })
+    }
           
-          var xhr = new XMLHttpRequest();
-          xhr.withCredentials = true;
-          
-          xhr.addEventListener("readystatechange", function () {
-            if (this.readyState === 4) {
-                let resposta = JSON.parse(this.responseText)['value']
-              console.log( resposta[0].UserKey );
-            }
-          });
-          
-          xhr.open("POST", "https://api2-dev.ploomes.com/Self/Login");
-          xhr.setRequestHeader("Content-Type", "application/json");
-          xhr.setRequestHeader("Cache-Control", "no-cache");
-          xhr.setRequestHeader("Postman-Token", "09164425-bfd3-46cb-a0b7-aea95db9a8b6");
-          
-          xhr.send(data);
+
+    _renderError(){
+        if(this.state.mensagemEmail.length > 0){
+            return(
+                <Text style={estilos.erroLogin}>{this.state.mensagemEmail}</Text>
+            )
+        }
     }
     
     render(){
+       
         var obj = {Email:this.props.email, Password:this.props.senha}
         
         return(
@@ -43,16 +65,19 @@ export class Login extends Component{
                     <Image style={{width:width(80)}} resizeMode='contain' source={require('../logos/logoLogin.png')} />
                 </View>
             
-                <Text style={estilos.textos}>
-                    E-Mail
-                </Text>
-                    <TextInput onChangeText={(text) => this.props.mudaEmail(text)} underlineColorAndroid='#f6f8f9' style={estilos.inputsTop} placeholder='E-mail'/>
-                <Text style={estilos.textos}>
-                    Senha
-                </Text>
-                <TextInput secureTextEntry={true} onChangeText={(text)=>this.props.mudaSenha(text)} underlineColorAndroid='#f6f8f9' style={estilos.inputs} placeholder='Senha'/>
+                    <TextInput value={this.props.email} onChangeText={(text) => this.props.mudaEmail(text)} underlineColorAndroid='#fff' style={estilos.inputsTop} placeholder='E-mail'/>
+                    {this._renderError()}
+                    <TextInput value={this.props.senha} secureTextEntry={true} onChangeText={(text)=>this.props.mudaSenha(text)} underlineColorAndroid='#fff' style={estilos.inputs} placeholder='Senha'/>
                 <TouchableOpacity 
-                    onPress={ () => this.login(obj)} 
+                    onPress={ () => {
+                        let validation = emailValidation(obj.Email)
+                        if(!validation.tipo){
+                            this.setState({mensagemEmail:validation.mensagem})
+                        }else{
+                            this.setState({mensagemEmail:''})
+                            this.login(obj)
+                        }
+                    }} 
                     style={estilos.botao}>
 
                     <Text  style={estilos.textoBotao}>Entrar</Text>
@@ -69,10 +94,12 @@ export class Login extends Component{
 const mapStateToProps = state => {
     let email = state.AppReducer.email
     let senha = state.AppReducer.senha
+    let userKey = state.AppReducer.userKey
     return{
         email,
         senha,
+        userKey,
     }
 }
 
-export default connect(mapStateToProps, {mudaEmail, mudaSenha})(Login)
+export default connect(mapStateToProps, {mudaEmail, mudaSenha, mudaUserKey})(Login)

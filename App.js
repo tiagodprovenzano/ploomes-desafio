@@ -5,9 +5,7 @@ import { createStore, applyMiddleware } from 'redux';
 import ReduxThunk from 'redux-thunk';
 
 import reducers from './src/reducers/index.js'
-import Navegador from './src/components/Navegador.js'
-import Login from './src/pages/Login'
-
+import Autenticador from './src/components/Autenticador'
 import {Font} from 'expo'
 
 
@@ -33,7 +31,7 @@ export default class App extends React.Component {
         return(
           
         <Provider store= {createStore (reducers, {}, applyMiddleware(ReduxThunk)) }>
-          <Login/>
+          <Autenticador/>
         </Provider>
         )
       }else{

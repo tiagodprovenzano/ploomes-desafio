@@ -6,7 +6,14 @@ import {
     MUDA_DADOS_CONTATO,
     MUDA_LIST_ROLES,
     MUDA_TELEFONES,
-    MUDA_VALUE_TELEFONE
+    MUDA_VALUE_TELEFONE,
+    MUDA_EMPRESAS,
+    MUDA_MODAL_STATES,
+    MUDA_MODAL_EMPRESAS,
+    MUDA_MODAL_CARGOS,
+    MUDA_MODAL_DEPARTAMENTOS,
+    MUDA_DEPARTAMENTOS,
+    MUDA_ACTIVE_PHONE_MODAL,
 
    } from '../actions/types.js'
 
@@ -17,6 +24,7 @@ const INITIAL_STATE = {
     userKey:'',
     contatos:[],
     listRoles:[],
+    departamentos:[],
     phoneTypes:[
                     {
                         "Id": 1,
@@ -42,6 +50,12 @@ const INITIAL_STATE = {
 
     telefones:[],
     valueTelefone:'',
+    empresas:[],
+    modalStates:false,
+    modalEmpresas:false,
+    modalCargos:false,
+    modalDepartamentos:false,
+    activePhoneModal:'',
 
 }
 
@@ -67,6 +81,27 @@ export default (state = INITIAL_STATE, action) =>{
     }
     if (action.type == MUDA_VALUE_TELEFONE){
      return { ...state, valueTelefone: action.payload }
+    }
+    if (action.type == MUDA_EMPRESAS){
+     return { ...state, empresas: action.payload }
+    }
+    if (action.type == MUDA_MODAL_STATES){
+     return { ...state, modalStates: action.payload }
+    }
+    if (action.type == MUDA_MODAL_EMPRESAS){
+     return { ...state, modalEmpresas: action.payload }
+    }
+    if (action.type == MUDA_MODAL_CARGOS){
+     return { ...state, modalCargos: action.payload }
+    }
+    if (action.type == MUDA_MODAL_DEPARTAMENTOS){
+     return { ...state, modalDepartamentos: action.payload }
+    }
+    if (action.type == MUDA_DEPARTAMENTOS){
+     return { ...state, departamentos: action.payload }
+    }
+    if (action.type == MUDA_ACTIVE_PHONE_MODAL){
+     return { ...state, activePhoneModal: action.payload }
     }
 
 return state

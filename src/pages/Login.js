@@ -27,17 +27,13 @@ export class Login extends Component{
         .then((response) => response.json())
         .then((responseJson) => {
             if(typeof responseJson.value === 'string'){
-                console.log('login failed');
-                console.log(responseJson.value)
                 
               }else if(typeof responseJson.value === 'object'){
-                console.log('login succesful')
                 this.props.mudaUserKey(responseJson.value[0].UserKey)
               }
 
         })
         .catch((error) => {
-            console.error(error);
         })
     }
           
@@ -78,7 +74,7 @@ export class Login extends Component{
                             this.login(obj)
                         }
                     }} 
-                    style={estilos.botao}>
+                    style={estilos.botaoLogin}>
 
                     <Text  style={estilos.textoBotao}>Entrar</Text>
                 

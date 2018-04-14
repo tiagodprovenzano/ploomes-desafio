@@ -2,7 +2,7 @@ import React, {Component} from 'react'
 import {View, Text, FlatList} from 'react-native'
 import { connect } from 'react-redux'
 
-import { mudaDadosContatos, mudaListRoles, mudaPhoneTypes } from '../actions/AppActions';
+import { mudaDadosContatos, mudaListRoles, mudaPhoneTypes, mudaEmpresas, mudaDepatamentos } from '../actions/AppActions';
 import estilos from '../components/estilos';
 import { useAPI } from '../components/library';
 
@@ -19,6 +19,8 @@ export class ListaClientes extends Component{
         let APIs = [
             {api:'Contacts', redux: this.props.mudaDadosContatos},
             {api:'Roles', redux: this.props.mudaListRoles},
+            {api:'Departments', redux: this.props.mudaDepatamentos},
+            {api:'Contacts?$filter=TypeId+eq+1', redux: this.props.mudaEmpresas},
             
         ]
     
@@ -60,12 +62,14 @@ const mapStateToProps = state =>{
     let userKey = state.AppReducer.userKey
     let contatos = state.AppReducer.contatos
     let listRoles = state.AppReducer.listRoles
+    
    
     return{
         userKey,
         contatos,
-        listRoles, 
+        listRoles,
+        
     }
 }
 
-export default connect(mapStateToProps, {mudaDadosContatos, mudaListRoles, mudaPhoneTypes})(ListaClientes)
+export default connect(mapStateToProps, {mudaDadosContatos, mudaListRoles, mudaPhoneTypes, mudaEmpresas, mudaDepatamentos})(ListaClientes)

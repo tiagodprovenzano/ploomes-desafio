@@ -73,8 +73,16 @@ export default estilos = StyleSheet.create({
         fontFamily:'lato',
         padding:10
     },
-    botao:{
+    botaoLogin:{
         backgroundColor:'#37c4f0',
+        width:width(35),
+        borderRadius:5,
+        marginVertical:20,
+        alignItems:'center',
+        alignSelf:'center'
+    },
+    botao:{
+        backgroundColor:'#27c24c',
         width:width(35),
         borderRadius:5,
         marginVertical:20,
@@ -116,7 +124,9 @@ export default estilos = StyleSheet.create({
         elevation:3
     },
     dropdown:{
-        flex:1
+        flex:1, 
+        marginHorizontal:10
+        
     },
     listaContatosWrap:{
         flex:1,

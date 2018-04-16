@@ -22,6 +22,7 @@ import {
   objPhone,
   findItemName, 
   getTelefones, 
+  zipCodeApi, 
   patchUser
 
 } from '../components/library';
@@ -47,7 +48,10 @@ import {
   mudaModalTeamMembers,
   resetForm,
   editUser, 
-  resetObj
+  resetObj, 
+  mudaLineOfBusiness, 
+  mudaOrigin
+
 } from '../actions/AppActions';
 
 export class CadastroClientes extends Component {
@@ -58,32 +62,70 @@ export class CadastroClientes extends Component {
     Name: '',
     Email: '',
     obj: {},
-    TypeId: 2,
+    TypeId: 1,
     NomesEmpresas: [],
-    menuTipoTelefone: false,
-    nascimento: '',
-    cpf: '',
+    origin: '',
+    cep: '',
+    cnpj: '',
     obs: '',
-    telefones: [],
-    addedConfirmation:false, 
+    telefones: [''],
+    addedConfirmation:false,
+    rua:'',
+    complemento:'',
+    bairro:'',
+    cidade:'',
+    estado:'',
+    LegalName:'',
+    segmento:'', 
     id:''
+
   };
 
-  async postData(obj, type) {
-
-    if (type === 'new'){
-      await useAPI(this.props.userKey, 'Contacts', 'POST', this.props.obj);
-    }
-    if(type === 'patch'){
-      await patchUser(this.state.id, this.props.obj, this.props.userKey)
-    }
+  async postData(obj) {
+    await useAPI(this.props.userKey, 'Contacts', 'POST', obj);
 
     var dados = await useAPI(this.props.userKey, 'Contacts', 'GET');
     this.props.mudaDadosContatos(dados);
 
+    /* this.setState({
+      collapsed: true,
+      iconName: 'md-arrow-dropdown-circle',
+      quantTelefones: [1],
+      Name: '',
+      Email: '',
+      obj: {},
+      TypeId: 2,
+      NomesEmpresas:[], 
+      menuTipoTelefone:false, 
+      nascimento:'', 
+      cnpj:'',
+      obs:''
+    }); */
   }
 
-  
+    async getAddress(cep){
+        let endereco = await zipCodeApi(cep)
+     //   console.log(endereco);
+        let api = "Cities?$top=20&$expand=Country,State&$filter=Name+eq+'" + endereco.localidade + "'" 
+        
+        let infoEnderecoApi = await useAPI(this.props.userKey, api, 'GET', null)
+        console.log(infoEnderecoApi);
+        
+        
+        this.setState({
+          rua:endereco.logradouro,
+          bairro:endereco.bairro,
+          cidade:infoEnderecoApi[0].Name,
+          estado:infoEnderecoApi[0].State.Name,
+        })
+        
+        
+        this.props.obj['StreetAddress'] = endereco.logradouro
+        this.props.obj['Neighborhood'] = endereco.bairro
+        this.props.obj['CityId'] = infoEnderecoApi[0].Id
+        this.props.obj['CityId'] = infoEnderecoApi[0].Id
+        
+    }
 
   telefones(ultimo, index) {
    
@@ -102,15 +144,16 @@ export class CadastroClientes extends Component {
           value={this.state.telefones[index]}
           onChangeText={text => {
             
-            if (text.length < 16) {
-            
-              let tel = this.state.telefones
-              tel[index] = text
-  
-              this.setState({
-                  telefones : tel
-              })
-
+              
+              if (text.length < 16) {
+                
+                let tel = this.state.telefones
+                tel[index] = text
+    
+                this.setState({
+                    telefones : tel
+                })
+              
               try {
                 this.props.obj['Phones'][index]['PhoneNumber'] = formatPhone( text );
               } 
@@ -166,12 +209,15 @@ export class CadastroClientes extends Component {
         <TouchableOpacity
           style={{ marginHorizontal: 10 }}
           onPress={() => {
+            console.log(this.state)  
             let temp = this.state.quantTelefones;
             temp[temp.length] = temp.length;
-
+            
+            
             this.setState({
-              quantTelefones: temp,
+                quantTelefones: temp,
             });
+            console.log(this.state)  
           }}>
           <Ionicons name="md-add" size={25} color="#2d1650" />
         </TouchableOpacity>
@@ -181,21 +227,49 @@ export class CadastroClientes extends Component {
     }
   }
 
-  findPhoneIndex(){
-    if(this.state.telefones.length === 0 && this.state.quantTelefones.length === 1 ){
+    findPhoneIndex(){
+        if(this.state.telefones.length === 0 && this.state.quantTelefones.length === 1 ){
 
-        return this.telefones(true,0)
+            return this.telefones(true,0)
 
-    }else{
-    
-    return this.state.quantTelefones.map(item=>{
-        let ultimo = item === (this.state.quantTelefones.length - 1)
-        return this.telefones(ultimo, item)
-    })
-    
+        }else{
+        
+        return this.state.quantTelefones.map(item=>{
+            let ultimo = item === (this.state.quantTelefones.length - 1)
+            return this.telefones(ultimo, item)
+        })
+        
+        }
     }
-}
 
+  async _getCidade(id, name){
+    
+    if(id != null){
+      console.log('entrou aqui');
+      
+      var api = "Cities?$top=20&$expand=Country,State&$filter=Id+eq+" + id + "" 
+    }
+    else if(name != null){
+      var api = "Cities?$top=20&$expand=Country,State&$filter=Name+eq+'" + name + "'" 
+    }
+
+    console.log('id - ', id);
+    
+    let infoEnderecoApi = await useAPI(this.props.userKey, api, 'GET', null)
+    console.log('infoEnderecoApi', infoEnderecoApi);
+   
+    if(id!=null){
+      console.log('estou aqui de novo');
+      this.setState({
+        cidade: infoEnderecoApi[0].Name, 
+        estado: infoEnderecoApi[0].State.Name
+      })
+    }else{
+      
+      this.props.obj['CityId'] = infoEnderecoApi[0].Id
+    }
+
+  }
 
   render() {
    // console.log('this.props.editThisUser',this.props.editThisUser);
@@ -225,29 +299,42 @@ export class CadastroClientes extends Component {
         dataTypeNames.push(findItemName(this.props.phoneTypes, dataTypesId[i], null))
       }      
 
+      if(cliente.CityId != undefined && cliente.CityId != null ){
+        this._getCidade(cliente.CityId, null)
+      }
+      
+
       this.setState({
       
         collapsed: true,
         Name: cliente.Name,
+        id:cliente.Id,
+        LegalName: cliente.LegalName,
         Email: cliente.Email,
         TypeId: cliente.TypeId,
-        nascimento: Birthday,
-        cpf: cliente.Register,
+        cep: cliente.ZipCode,
+        cnpj: cliente.Register,
         obs: cliente.Note,
-        empresa: findItemName(this.props.empresas, cliente, 'CompanyId'),
-        cargo: findItemName(this.props.listRoles, cliente, 'RoleId'),
+        segmento: findItemName(this.props.lineOfBusiness, cliente, 'LineOfBusinessId'),
+        origin: findItemName(this.props.origin, cliente, 'OriginId'),
         departamento: findItemName(this.props.departamentos, cliente, 'DepartmentId'),
         responsavel: findItemName(this.props.teamMembers, cliente, 'OwnerId'),
         telefones: getTelefones(cliente.Phones, 'PhoneNumber'), 
         tiposTelefones: dataTypeNames,
-        id: cliente.Id,
+        rua: cliente.StreetAddress, 
+        complemento: cliente.StreetAddressLine2, 
+        bairro: cliente.Neighborhood, 
         
+
       })
     
       return null
     }else{
       
     }
+    
+    
+    
     mapData(this.props.phoneTypes);
     return (
       
@@ -271,7 +358,85 @@ export class CadastroClientes extends Component {
             />
         
           </View>
+         
+          <View style={estilos.inputContainer}>
+          
+            <Ionicons name="md-person" size={25} color="#2d1650" />
+            
+            <TextInput
+              style={estilos.inputRow}
+              placeholderTextColor="#786fb0"
+              underlineColorAndroid="#fff"
+              placeholder="Razão Social"
+              value={this.state.LegalName}
+              onChangeText={text => {
+                this.setState({ LegalName: text });
+                this.props.obj['LegalName'] = text;
+              }}
+            />
+        
+          </View>
+          
+          <View style={estilos.inputContainer}>
+              <Ionicons name="md-card" size={25} color="#2d1650" />
+              <TextInputMask
+                style={estilos.inputRow}
+                placeholderTextColor="#786fb0"
+                underlineColorAndroid="#fff"
+                value={this.state.cnpj}
+                placeholder="CNPJ"
+                type={'cnpj'}
+                onChangeText={text => {
+                  this.setState({
+                    cnpj: text,
+                  });
+                  text = text.replace(/\D/g, '');
+                  this.props.obj['Register'] = text;
+                }}
+              />
+            </View>
 
+        <View style={estilos.inputContainer}>
+            <Ionicons name="ios-briefcase" size={25} color="#2d1650" />
+            
+            <ModalLocked
+              value={this.state.segmento}
+              editavel={true}
+              data={this.props.lineOfBusiness}
+              titulo="Segmento"
+              visible={this.props.modalEmpresas}
+              manager={this.props.mudaModalEmpresas}
+              redux={this.props.mudaLineOfBusiness}
+              api={'Contacts@LinesOfBusiness'}
+              postTitle={'LineOfBusinessId'}
+            />
+
+            <ModalLocked
+              editavel={true}
+              value={this.state.origin}
+              data={this.props.origin}
+              titulo="Origem"
+              visible={this.props.modalCargos}
+              manager={this.props.mudaModalCargos}
+              redux={this.props.mudaOrigin}
+              api={'Contacts@Origins'}
+              postTitle={'OriginId'}
+            />
+            
+          {/*   <ModalLocked
+              editavel={true}
+              value={this.state.departamento}
+              data={this.props.departamentos}
+              titulo="Departamentos"
+              visible={this.props.modalDepartamentos}
+              manager={this.props.mudaModalDepatamentos}
+              redux={this.props.mudaDepatamentos}
+              api={'Departments'}
+              postTitle={'DepartmentId'}
+            /> */}
+            
+        </View>
+        
           <View style={estilos.inputContainer}>
             <Ionicons name="ios-mail" size={25} color="#2d1650" />
             <TextInput
@@ -287,116 +452,120 @@ export class CadastroClientes extends Component {
             />
           </View>
 
-          <View style={estilos.inputContainer}>
-            <Ionicons name="ios-briefcase" size={25} color="#2d1650" />
-            
-            <ModalLocked
-              value={this.state.empresa}
-              editavel={true}
-              data={this.props.empresas}
-              titulo="Empresa"
-              visible={this.props.modalEmpresas}
-              manager={this.props.mudaModalEmpresas}
-              redux={this.props.mudaEmpresas}
-              api={'Contacts'}
-              postTitle={'CompanyId'}
-            />
-
-            <ModalLocked
-              editavel={true}
-              value={this.state.cargo}
-              data={this.props.listRoles}
-              titulo="Cargos"
-              visible={this.props.modalCargos}
-              manager={this.props.mudaModalCargos}
-              redux={this.props.mudaListRoles}
-              api={'Roles'}
-              postTitle={'RoleId'}
-            />
-            
-            <ModalLocked
-              editavel={true}
-              value={this.state.departamento}
-              data={this.props.departamentos}
-              titulo="Departamentos"
-              visible={this.props.modalDepartamentos}
-              manager={this.props.mudaModalDepatamentos}
-              redux={this.props.mudaDepatamentos}
-              api={'Departments'}
-              postTitle={'DepartmentId'}
-            />
-            
-          </View>
+          
           {
           this.findPhoneIndex()    
           }
 
-          <View style={estilos.inputContainer}>
-            <Ionicons name="ios-clipboard" size={25} color="#2d1650" />
-            
-            <TextInputMask
-              style={estilos.inputRow}
-              placeholderTextColor="#786fb0"
-              underlineColorAndroid="#fff"
-              value={this.state.nascimento}
-              placeholder="Data de Nasc (DD/MM/AAAA)"
-              onChangeText={text => {
-                this.setState({
-                  nascimento: text,
-                });
-                text = text.split('/');
-
-                if (text.length === 3) {
-                  if (text[2].length === 4) {
-                    let date = text[2] +'-'+ text[1] +'-'+text[0] +'T00:00:00-03:00';
-                    this.props.obj['Birthday'] = date;
-                  }
-                }
-              }}
-              type={'datetime'}
-              options={{
-                format: 'DD/MM/YYYY HH:mm:ss',
-              }}
-            />
-
-          </View>
 
           <Collapsible collapsed={this.state.collapsed}>
 
             <View style={estilos.inputContainer}>
-              <Ionicons name="md-card" size={25} color="#2d1650" />
-              <TextInputMask
+                <Ionicons name="md-search" size={25} color="#2d1650" />
+                
+                <TextInputMask
+                    type={'zip-code'}
+                    style={estilos.inputRow}
+                    placeholderTextColor="#786fb0"
+                    underlineColorAndroid="#fff"
+                    value={this.state.cep}
+                    placeholder="CEP"
+                    onChangeText={text => {
+                       
+                        this.setState({
+                           cep: text
+                        });
+                        text = text.replace(/\D/g, '');
+                        this.props.obj['ZipCode'] = text;
+
+                    }}
+                />
+
+            <TouchableOpacity 
+                style={{padding:5, backgroundColor:'#27c24c', borderRadius:5}}    
+                onPress={()=>{
+                  try {
+                    let cep = this.state.cep
+                    cep = cep.replace(/\D/g, '')
+                    this.getAddress(cep)
+                    } catch (error) {
+                      try {
+                        let cep = this.props.obj['ZipCode']
+                        cep = cep.replace(/\D/g, '')
+                        this.getAddress(cep)
+                      } catch (error) {
+                        
+                      }
+                    
+                    }
+                }}>
+                    <Text style={{color:'#fff'}}>Buscar CEP</Text>
+                </TouchableOpacity>
+
+            </View>
+            
+            <View style={estilos.inputContainer}>
+              <TextInput
                 style={estilos.inputRow}
                 placeholderTextColor="#786fb0"
                 underlineColorAndroid="#fff"
-                value={this.state.cpf}
-                placeholder="CPF"
-                type={'cpf'}
+                placeholder="Rua"
+                value={this.state.rua}
                 onChangeText={text => {
-                  this.setState({
-                    cpf: text,
-                  });
-                  text = text.replace(/\D/g, '');
-                  this.props.obj['Register'] = text;
+                    this.setState({ rua: text });
+                    this.props.obj['StreetAddress'] = text; 
                 }}
-              />
+            />
             </View>
+
             <View style={estilos.inputContainer}>
-              <Ionicons name="ios-people" size={25} color="#2d1650" />
-
-              <ModalLocked
-                editavel={false}
-                value={this.state.responsavel}
-                data={this.props.teamMembers}
-                titulo="Responsavel"
-                visible={this.props.modalTeamMembers}
-                manager={this.props.mudaModalTeamMembers}
-                redux={this.props.mudaTeamMembers}
-                api={'Users/GetContactOwners'}
-                postTitle={'OwnerId'}
-              />
-
+              <TextInput
+                style={estilos.inputRow}
+                placeholderTextColor="#786fb0"
+                underlineColorAndroid="#fff"
+                placeholder="Complemento"
+                value={this.state.complemento}
+                onChangeText={text => {
+                    this.setState({ complemento: text });
+                    this.props.obj['StreetAddressLine2'] = text; 
+                }}
+            />
+              <TextInput
+                style={estilos.inputRow}
+                placeholderTextColor="#786fb0"
+                underlineColorAndroid="#fff"
+                placeholder="Bairro"
+                value={this.state.bairro}
+                onChangeText={text => {
+                    this.setState({ bairro: text });
+                    this.props.obj['Neighborhood'] = text; 
+                }}
+            />
             </View>
+
+            <View style={estilos.inputContainer}>
+              <TextInput
+                style={estilos.inputRow}
+                placeholderTextColor="#786fb0"
+                underlineColorAndroid="#fff"
+                placeholder="Cidade"
+                value={this.state.cidade}
+                onChangeText={text => {
+                    this.setState({ cidade: text });
+                }}
+            />
+              <TextInput
+                style={estilos.inputRow}
+                placeholderTextColor="#786fb0"
+                underlineColorAndroid="#fff"
+                placeholder="UF"
+                value={this.state.estado}
+                onChangeText={text => {
+                   this.setState({ estado: text });
+                }}
+            />
+            </View>
+
             <View style={estilos.inputContainerFreeSize}>
               <TextInput
                 multiline={true}
@@ -439,33 +608,43 @@ export class CadastroClientes extends Component {
         <TouchableOpacity
           onPress={() => {
             let cliente = this.props.editThisUser
-
+            if(this.state.cidade != '' && this.props.obj['CityId'] === undefined){
+              let dados = this._getCidade(null, this.state.cidade)
+              
+              this.props.obj['CityId'] = dados[0].Id
+            }
+            
             console.log(this.props.obj)
-            
             this._sendData()
-            
             this.props.resetForm(true);
             this.setState({
             
               collapsed: true,
               iconName: 'md-arrow-dropdown-circle',
-              quantTelefones: [1],
+              quantTelefones: [0],
               Name: '',
               Email: '',
               obj: {},
-              TypeId: 2,
+              TypeId: 1,
               NomesEmpresas: [],
-              menuTipoTelefone: false,
-              nascimento: '',
-              cpf: '',
+              origin: '',
+              cep: '',
+              cnpj: '',
               obs: '',
-              addedConfirmation:!this.state.addedConfirmation, 
-              telefones:[]
-            
+              telefones: [''],
+              addedConfirmation:false,
+              rua:'',
+              complemento:'',
+              bairro:'',
+              cidade:'',
+              estado:'',
+              LegalName:'',
+              segmento:'', 
+              id:''
+              
             });
-            
-          }}
-          style={estilos.botao}>
+        }}
+        style={estilos.botao}>
           <Text style={estilos.textoBotao}>Cadastrar</Text>
         </TouchableOpacity>
         
@@ -480,14 +659,14 @@ export class CadastroClientes extends Component {
         <View style={estilos.modalContent}>
         <Text>Cliente cadastrado com sucesso</Text>
           <TouchableOpacity style={estilos.botao} onPress={()=>{
-            console.log(this.state)
-            this.props.resetObj()
-            this.setState({
-              addedConfirmation: false,
-            })
-            this.props.editUser({})
-            this.props.resetForm(false)
-          
+              //  console.log(this.state)
+              this.props.resetObj()
+              this.setState({
+                  addedConfirmation: false,
+                })
+                this.props.editUser({})
+                this.props.resetForm(false)
+                
           }}>
             <Text style={estilos.textoBotao}>OK</Text>
           </TouchableOpacity>
@@ -497,7 +676,6 @@ export class CadastroClientes extends Component {
       </ScrollView>
     );
   }
-
   _sendData(){
     if(this.props.obj != {}){
     
@@ -516,6 +694,21 @@ export class CadastroClientes extends Component {
       }
     }
   }
+  
+  async postData(obj, type) {
+
+    if (type === 'new'){
+      await useAPI(this.props.userKey, 'Contacts', 'POST', this.props.obj);
+    }
+    if(type === 'patch'){
+      await patchUser(this.state.id, this.props.obj, this.props.userKey)
+    }
+
+    var dados = await useAPI(this.props.userKey, 'Contacts', 'GET');
+    this.props.mudaDadosContatos(dados);
+
+  }
+
 }
 
 const mapStateToProps = state => {
@@ -535,6 +728,8 @@ const mapStateToProps = state => {
   let modalTeamMembers = state.AppReducer.modalTeamMembers;
   let shouldFormReset = state.AppReducer.shouldFormReset;
   let editThisUser = state.AppReducer.editThisUser;
+  let lineOfBusiness = state.AppReducer.lineOfBusiness;
+  let origin = state.AppReducer.origin;
 
   return {
     userKey,
@@ -552,11 +747,14 @@ const mapStateToProps = state => {
     teamMembers,
     modalTeamMembers,
     shouldFormReset, 
-    editThisUser
+    editThisUser, 
+    lineOfBusiness,
+    origin 
   };
 };
 
 export default connect(mapStateToProps, {
+  
   mudaDadosContatos,
   mudaModalStates,
   mudaModalEmpresas, 
@@ -570,7 +768,9 @@ export default connect(mapStateToProps, {
   mudaModalTeamMembers,
   resetForm,
   editUser, 
-  resetObj
+  resetObj, 
+  mudaLineOfBusiness,
+  mudaOrigin
 
 })(CadastroClientes);
   

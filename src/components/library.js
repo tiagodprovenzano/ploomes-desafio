@@ -92,7 +92,6 @@ export const emailValidation = dados => {
             let len = Object.keys(obj);
             obj[len.length] = {
               PhoneNumber: phoneData[k].phone,
-              TypeId: phoneTypes[i].Id,
             };
           }
         }
@@ -100,4 +99,95 @@ export const emailValidation = dados => {
     }
     return(obj);
   }
+
+  export function findItemName(reference, userData, search){
+    
+    for(i in reference){
+      if(typeof userData === 'array'){
+        if(reference[i].Id === userData[search]){
+        
+          return reference[i].Name
+          
+        }  
+      }
+      
+      if(reference[i].Id === userData){
+        
+        return reference[i].Name
+        
+      }
+    }
+  }
+
+export function getTelefones(data, type){
+  if(data === []){
+    
+    return data
+
+  } else {
+
+    let temp = []
+
+    try {
+      
+      data.map((item)=>{
+        temp.push(item[type])
+      })
+
+      
+      
+    } catch (error) {
+      return []
+    }
+
+    return temp
+  }
+
+}
+
+
+export async function zipCodeApi(zipCode){
+let dados={}
+let url = 'http://viacep.com.br/ws/'+zipCode+'/json/'
+
+await fetch(url)
+.then((response) => response.json())
+.then((responseJson) => {
+ 
+   dados = responseJson;
+})
+.catch((error) => {
+  console.error(error);
+});
+
+return(dados)
+
+}
+
+
+export async function patchUser(id, body, UserKey){
+
+  /* console.log('id - ', id);
+  console.log('body - ', body);
+  console.log('UserKey - ', UserKey); */
+  
+  
+  var xhr = new XMLHttpRequest();
+  xhr.withCredentials = true;
+  
+  xhr.addEventListener("readystatechange", function () {
+    if (this.readyState === 4) {
+      console.log(this.responseText);
+    }
+  });
+  
+  xhr.open("PATCH", "https://api2-dev.ploomes.com/Contacts(" + id +")");
+  xhr.setRequestHeader("User-Key", UserKey);
+  xhr.setRequestHeader("Content-Type", "application/json");
+  xhr.setRequestHeader("Cache-Control", "no-cache");
+  
+  xhr.send(JSON.stringify(body));
+
+}
+
 

@@ -13,6 +13,13 @@ import {
     MUDA_MODAL_DEPARTAMENTOS,
     MUDA_DEPARTAMENTOS,
     MUDA_ACTIVE_PHONE_MODAL,
+    MUDA_TEAM_MEMBERS, 
+    MUDA_MODAL_TEAM_MEMBERS,
+    RESET_FORM,
+    EDIT_THIS_USER, 
+    RESET_OBJ,
+    MUDA_LINE_OF_BUSINESS,
+    MUDA_ORIGIN
 
 } from './types'
 
@@ -104,6 +111,56 @@ export const mudaActivePhoneModal = (state) => {
     return {
         type: MUDA_ACTIVE_PHONE_MODAL,
         payload: state
+    }
+}
+export const mudaTeamMembers = (state) => {
+
+    return {
+        type: MUDA_TEAM_MEMBERS,
+        payload: state
+    }
+}
+export const mudaModalTeamMembers = (state) => {
+    state = !state
+    return {
+        type: MUDA_MODAL_TEAM_MEMBERS,
+        payload: state
+    }
+}
+export const resetForm = (state) => {
+    
+    return {
+        type: RESET_FORM,
+        payload: state
+    }
+}
+export const editUser = (state) => {
+    
+    return {
+        type: EDIT_THIS_USER,
+        payload: state
+    }
+}
+
+export const resetObj = () => {
+    
+    return {
+        type: RESET_OBJ,
+        payload: {}
+    }
+}
+export const mudaLineOfBusiness = (arr) => {
+    
+    return {
+        type: MUDA_LINE_OF_BUSINESS,
+        payload: arr
+    }
+}
+export const mudaOrigin = (arr) => {
+    
+    return {
+        type: MUDA_ORIGIN,
+        payload: arr
     }
 }
 

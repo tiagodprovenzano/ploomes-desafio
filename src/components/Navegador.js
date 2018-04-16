@@ -1,34 +1,39 @@
-import React from 'react';
-import { Text, View } from 'react-native';
-import { TabNavigator, TabBarTop } from 'react-navigation';
-import { height } from 'react-native-dimension'
+import React, {Component} from 'react';
+import {
+  Text,
+  View
+} from 'react-native';
+import {
+  DrawerNavigator,
+  StackNavigator
+} from 'react-navigation';
+import {
+  height
+} from 'react-native-dimension'
 
-import ListaClientes from "../pages/ListaClientes";
-import CadastroClientes from "../pages/CadastroClientes";
+import Listas from './drawerListas'
+import SeleCadastro from '../pages/SeleCadastro'
+import CadastroClientes from '../pages/CadastroClientes'
+import ListaClientes from '../pages/ListaClientes'
 
 
-export default TabNavigator({
-  Home: { 
-    screen: ListaClientes, 
-    navigationOptions:{
-      title:'Lista Clientes'
-    } 
+export default StackNavigator({
+  Listas:{
+    screen: Listas, 
   },
-  Settings: { 
-    screen: CadastroClientes, 
-    navigationOptions:{
-      title:'Cadastro Clientes'
-    } 
+  SeleCadastro:{
+    screen:SeleCadastro, 
   },
-},{ 
-  tabBarOptions:{
-        style:{
-          backgroundColor:'#786fb0',
-
-        },
-        indicatorStyle:{backgroundColor:'#fff'}
+  CadastroClientes:{
+    screen:CadastroClientes, 
   },
-  tabBarPosition: 'top',
-  tabBarComponent: TabBarTop
+},
+  {
+    headerMode:'none',
   }
+
 );
+
+
+
+ 

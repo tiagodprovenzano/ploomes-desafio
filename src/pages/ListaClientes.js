@@ -100,10 +100,10 @@ export class ListaClientes extends Component{
                             <View style={estilos.listaContatos}>
                                 <TouchableOpacity
                                 onPress={()=>{
-                                    this.setState({
+                                     this.setState({
                                         editModalActive: !this.state.editModalActive,
                                         activeUser: data[item]
-                                    })
+                                    }) 
                                 }}
                                 >
                                     <View>
@@ -128,22 +128,26 @@ export class ListaClientes extends Component{
                 <Ionicons name='md-person-add' size={40} color='#fff'/>
             </TouchableOpacity>
             <Modal
+                style={estilos.dropdown}
                 animationType="fade"
                 transparent={true}
                 visible={this.state.editModalActive}
-                onRequestClose={() => this.setState({
-                editModalActive:!this.state.editModalActive
-            })}>>
+                onRequestClose={() =>{ 
+                    this.setState({
+                        editModalActive:!this.state.editModalActive
+                })}}
+                >
                 <View style={{width:width(100), height:height(100), position:'absolute', top:0, backgroundColor:'rgba(0,0,0,0.5)', justifyContent:'center', alignItems:'center'}}>
                     <View style={{width:width(75), height:height(75), backgroundColor:'#fff', borderRadius:10, padding:15 }}>
-                        <TouchableOpacity
+                         <View>
+                         <TouchableOpacity
                             onPress={()=>{
                                 this.setState({
                                     editModalActive: !this.state.editModalActive
                                 })
                             }} 
                             style={{alignSelf:'flex-end'}}>
-                            <Text style={{ fontSize:25, margin:10}}>X</Text>
+                            <Text style={{ fontSize:25, margin:10}}> X </Text>
                         </TouchableOpacity>
                         
                         <Text style={{ fontSize:10, marginTop:10}}>Nome</Text>
@@ -151,7 +155,8 @@ export class ListaClientes extends Component{
                         <Text style={{ fontSize:10, marginTop:10}}>Tipo</Text>
                         <Text style={{ fontSize:15, }}>{this.translateTypeId(this.state.activeUser.TypeId)}</Text>
                         <Text style={{ fontSize:10, marginTop:10}}>Email</Text>
-                        <Text style={{ fontSize:15, }}>{this.state.activeUser.Email}</Text>
+                        <Text style={{ fontSize:15, }}>{this.state.activeUser.Email}</Text> 
+                        </View>
                         
                         <View style={{flex:1, justifyContent:'center'}}>
                             <TouchableOpacity 
@@ -162,7 +167,8 @@ export class ListaClientes extends Component{
                                     marginTop:5,
                                     marginVertical: 5,
                                     alignItems: 'center',
-                                    alignSelf: 'center',}}
+                                    alignSelf: 'center',
+                                }}
                                 onPress={()=>{
                                     this.props.editUser(this.state.activeUser)
                                     this.props.resetForm(true)

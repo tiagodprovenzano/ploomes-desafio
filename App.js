@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, StatusBar} from 'react-native';
+import { StyleSheet, Text, View, StatusBar, KeyboardAvoidingView} from 'react-native';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import ReduxThunk from 'redux-thunk';
@@ -31,7 +31,9 @@ export default class App extends React.Component {
         return(
           
         <Provider store= {createStore (reducers, {}, applyMiddleware(ReduxThunk)) }>
+          <KeyboardAvoidingView style={{flex:1}}behavior='padding'>
           <Autenticador/>
+          </KeyboardAvoidingView>
         </Provider>
         )
       }else{

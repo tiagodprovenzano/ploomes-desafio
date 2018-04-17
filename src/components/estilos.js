@@ -108,12 +108,25 @@ export default (estilos = StyleSheet.create({
     alignSelf: 'center',
   },
   listaContatos: {
-    flexDirection:'row',
-    padding: 10,
-    backgroundColor: '#edf1f2',
-    marginTop: 2,
+    backgroundColor:'#fff', 
+    marginHorizontal:30,
+    borderBottomWidth:1, 
+    borderBottomColor:'#504887', 
+    paddingVertical:10
+  },
+  radioInactive:{
+    backgroundColor:'#3a3f50', 
+    padding:10, 
+    borderRadius:5, 
+    width:width(28), 
     alignItems:'center',
-    justifyContent:'space-between'
+  },
+  filterActive:{
+    backgroundColor:'#504887', 
+    padding:10,
+    borderRadius:5, 
+    width:width(28), 
+    alignItems:'center'
   },
   viewFormulario: {
     padding: 5,
@@ -152,8 +165,9 @@ export default (estilos = StyleSheet.create({
   },
   modalTitle: {
     fontFamily: 'lato',
-    fontSize: 17,
-    paddingHorizontal: 7,
+    fontSize: 15,
+
+    paddingLeft: 5,
   },
   modalWrap: {
     
@@ -169,6 +183,8 @@ export default (estilos = StyleSheet.create({
       maxHeight: height(50),
       width: width(75),
       padding: 10,
+      borderRadius:10, 
+      elevation:5
     
   },
 }));

@@ -69,138 +69,8 @@ export class CadastroClientes extends Component {
     id:''
   };
 
-  async postData(obj, type) {
-
-    if (type === 'new'){
-      await useAPI(this.props.userKey, 'Contacts', 'POST', this.props.obj);
-    }
-    if(type === 'patch'){
-      await patchUser(this.state.id, this.props.obj, this.props.userKey)
-    }
-
-    var dados = await useAPI(this.props.userKey, 'Contacts', 'GET');
-    this.props.mudaDadosContatos(dados);
-
-  }
-
-  
-
-  telefones(ultimo, index) {
-   
-    return (
-      
-      <View style={estilos.inputContainer}>
-        <Ionicons name="ios-call" size={25} color="#2d1650" />
-
-        <TextInputMask
-          style={estilos.inputRowTel}
-          type='cel-phone'
-          keyboardType="phone-pad"
-          placeholderTextColor="#786fb0"
-          underlineColorAndroid="#fff"
-          placeholder="Telefones"
-          value={this.state.telefones[index]}
-          onChangeText={text => {
-            
-            if (text.length < 16) {
-            
-              let tel = this.state.telefones
-              tel[index] = text
-  
-              this.setState({
-                  telefones : tel
-              })
-
-              try {
-                this.props.obj['Phones'][index]['PhoneNumber'] = formatPhone( text );
-              } 
-              
-              catch (error) {
-                
-                try {
-                  this.props.obj['Phones'][index] = { ['PhoneNumber']: formatPhone(text), };
-                } 
-                
-                catch (error) {
-                  try { 
-                    this.props.obj['Phones'] = [];
-                    this.props.obj['Phones'][index] = { ['PhoneNumber']: formatPhone(text), };
-                  } 
-                  
-                  catch (error) {}
-                }
-              }
-
-              /* if (!this.state.telefones.includes(index)) {
-                this.state.telefones.push(index);
-              } */
-            } 
-            
-            else {
-              null;
-            }
-          }}
-        />
-        
-        <ModalLocked 
-          data={this.props.phoneTypes} 
-          value={this.state.tiposTelefones}
-          titulo="Tipos"
-          visible={this.props.modalStates}
-          manager={this.props.mudaModalStates}
-          index= {index}
-          activePhoneModal={this.props.activePhoneModal}
-          activePhoneModalManager={this.props.mudaActivePhoneModal}
-          postTitle={'TypeId'}
-        />
-
-        {this.renderUltimo(ultimo)}
-
-      </View>
-    );
-  }
-
-  renderUltimo(ultimo) {
-    if (ultimo) {
-      return (
-        <TouchableOpacity
-          style={{ marginHorizontal: 10 }}
-          onPress={() => {
-            let temp = this.state.quantTelefones;
-            temp[temp.length] = temp.length;
-
-            this.setState({
-              quantTelefones: temp,
-            });
-          }}>
-          <Ionicons name="md-add" size={25} color="#2d1650" />
-        </TouchableOpacity>
-      );
-    } else {
-      return null;
-    }
-  }
-
-  findPhoneIndex(){
-    if(this.state.telefones.length === 0 && this.state.quantTelefones.length === 1 ){
-
-        return this.telefones(true,0)
-
-    }else{
-    
-    return this.state.quantTelefones.map(item=>{
-        let ultimo = item === (this.state.quantTelefones.length - 1)
-        return this.telefones(ultimo, item)
-    })
-    
-    }
-}
-
-
   render() {
-   // console.log('this.props.editThisUser',this.props.editThisUser);
-    
-    
+   // //console.log('this.props.editThisUser',this.props.editThisUser);
 
     if(this.props.shouldFormReset){
 
@@ -218,12 +88,15 @@ export class CadastroClientes extends Component {
       let dataTypesId = getTelefones(cliente.Phones, 'TypeId')
       let dataTypeNames = []
     
-    //  console.log( 'cliente.Phones - ', cliente.Phones );
-    //  console.log( 'dataTypesId - ', dataTypesId );
+      
       
       for(i in dataTypesId){
         dataTypeNames.push(findItemName(this.props.phoneTypes, dataTypesId[i], null))
       }      
+
+      //console.log('this.props.departamentos',this.props.departamentos);
+      //console.log('cliente',cliente);
+      
 
       this.setState({
       
@@ -234,15 +107,21 @@ export class CadastroClientes extends Component {
         nascimento: Birthday,
         cpf: cliente.Register,
         obs: cliente.Note,
-        empresa: findItemName(this.props.empresas, cliente, 'CompanyId'),
-        cargo: findItemName(this.props.listRoles, cliente, 'RoleId'),
-        departamento: findItemName(this.props.departamentos, cliente, 'DepartmentId'),
+        empresa: cliente.Company,
+        cargo: cliente.Role,
+        departamento: cliente.Department,
         responsavel: findItemName(this.props.teamMembers, cliente, 'OwnerId'),
         telefones: getTelefones(cliente.Phones, 'PhoneNumber'), 
         tiposTelefones: dataTypeNames,
         id: cliente.Id,
         
       })
+
+      try {
+        
+      } catch (error) {
+        
+      }
     
       return null
     }else{
@@ -291,14 +170,14 @@ export class CadastroClientes extends Component {
             <Ionicons name="ios-briefcase" size={25} color="#2d1650" />
             
             <ModalLocked
-              value={this.state.empresa}
               editavel={true}
+              value={this.state.empresa}
               data={this.props.empresas}
               titulo="Empresa"
               visible={this.props.modalEmpresas}
               manager={this.props.mudaModalEmpresas}
               redux={this.props.mudaEmpresas}
-              api={'Contacts'}
+              api={'Contacts?$filter=TypeId+eq+1'}
               postTitle={'CompanyId'}
             />
 
@@ -306,7 +185,7 @@ export class CadastroClientes extends Component {
               editavel={true}
               value={this.state.cargo}
               data={this.props.listRoles}
-              titulo="Cargos"
+              titulo="Cargo"
               visible={this.props.modalCargos}
               manager={this.props.mudaModalCargos}
               redux={this.props.mudaListRoles}
@@ -318,7 +197,7 @@ export class CadastroClientes extends Component {
               editavel={true}
               value={this.state.departamento}
               data={this.props.departamentos}
-              titulo="Departamentos"
+              titulo="Departamento"
               visible={this.props.modalDepartamentos}
               manager={this.props.mudaModalDepatamentos}
               redux={this.props.mudaDepatamentos}
@@ -440,7 +319,7 @@ export class CadastroClientes extends Component {
           onPress={() => {
             let cliente = this.props.editThisUser
 
-            console.log(this.props.obj)
+            //console.log(this.props.obj)
             
             this._sendData()
             
@@ -480,7 +359,7 @@ export class CadastroClientes extends Component {
         <View style={estilos.modalContent}>
         <Text>Cliente cadastrado com sucesso</Text>
           <TouchableOpacity style={estilos.botao} onPress={()=>{
-            console.log(this.state)
+            //console.log(this.state)
             this.props.resetObj()
             this.setState({
               addedConfirmation: false,
@@ -516,6 +395,131 @@ export class CadastroClientes extends Component {
       }
     }
   }
+
+  async postData(obj, type) {
+
+    if (type === 'new'){
+      await useAPI(this.props.userKey, 'Contacts', 'POST', this.props.obj);
+    }
+    if(type === 'patch'){
+      await patchUser(this.state.id, this.props.obj, this.props.userKey)
+    }
+
+    var dados = await useAPI(this.props.userKey, 'Contacts', 'GET');
+    this.props.mudaDadosContatos(dados);
+
+  }
+
+  telefones(ultimo, index) {
+   
+    return (
+      
+      <View style={estilos.inputContainer}>
+        <Ionicons name="ios-call" size={25} color="#2d1650" />
+
+        <TextInputMask
+          style={estilos.inputRowTel}
+          type='cel-phone'
+          keyboardType="phone-pad"
+          placeholderTextColor="#786fb0"
+          underlineColorAndroid="#fff"
+          placeholder="Telefones"
+          value={this.state.telefones[index]}
+          onChangeText={text => {
+            
+            if (text.length < 16) {
+            
+              let tel = this.state.telefones
+              tel[index] = text
+  
+              this.setState({
+                  telefones : tel
+              })
+
+              try {
+                this.props.obj['Phones'][index]['PhoneNumber'] = formatPhone( text );
+              } 
+              
+              catch (error) {
+                
+                try {
+                  this.props.obj['Phones'][index] = { ['PhoneNumber']: formatPhone(text), };
+                } 
+                
+                catch (error) {
+                  try { 
+                    this.props.obj['Phones'] = [];
+                    this.props.obj['Phones'][index] = { ['PhoneNumber']: formatPhone(text), };
+                  } 
+                  
+                  catch (error) {}
+                }
+              }
+
+              /* if (!this.state.telefones.includes(index)) {
+                this.state.telefones.push(index);
+              } */
+            } 
+            
+            else {
+              null;
+            }
+          }}
+        />
+        
+        <ModalLocked 
+          data={this.props.phoneTypes} 
+          value={this.state.tiposTelefones}
+          titulo="Tipos"
+          visible={this.props.modalStates}
+          manager={this.props.mudaModalStates}
+          index= {index}
+          activePhoneModal={this.props.activePhoneModal}
+          activePhoneModalManager={this.props.mudaActivePhoneModal}
+          postTitle={'TypeId'}
+        />
+
+        {this.renderUltimo(ultimo)}
+
+      </View>
+    );
+  }
+
+  renderUltimo(ultimo) {
+    if (ultimo) {
+      return (
+        <TouchableOpacity
+          style={{ marginHorizontal: 10 }}
+          onPress={() => {
+            let temp = this.state.quantTelefones;
+            temp[temp.length] = temp.length;
+
+            this.setState({
+              quantTelefones: temp,
+            });
+          }}>
+          <Ionicons name="md-add" size={25} color="#2d1650" />
+        </TouchableOpacity>
+      );
+    } else {
+      return null;
+    }
+  }
+
+  findPhoneIndex(){
+    if(this.state.telefones.length === 0 && this.state.quantTelefones.length === 1 ){
+
+        return this.telefones(true,0)
+
+    }else{
+    
+    return this.state.quantTelefones.map(item=>{
+        let ultimo = item === (this.state.quantTelefones.length - 1)
+        return this.telefones(ultimo, item)
+    })
+    
+    }
+}
 }
 
 const mapStateToProps = state => {

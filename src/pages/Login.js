@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Text, View, Image, TextInput, TouchableOpacity} from 'react-native'
+import {Text, View, Image, TextInput, TouchableOpacity, KeyboardAvoidingView} from 'react-native'
 import {connect} from 'react-redux'
 import estilos from '../components/estilos.js'
 import {width, height} from 'react-native-dimension'

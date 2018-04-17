@@ -101,11 +101,34 @@ export const emailValidation = dados => {
   }
 
   export function findItemName(reference, userData, search){
+    //console.log('reference',reference);
+    //console.log('userData',userData);
+    //console.log('search',search);
     
-    for(i in reference){
+    let value = ''
+   reference.map(item=>{
+      //console.log(item.Name)
       if(typeof userData === 'array'){
+        if(item.Id === userData[search]){
+          value = item.Id
+        }
+      }
+      if(item.Id === userData){
+        //console.log('reference[i].Id === userData ok ')
+          value = item.Id
+      }
+      if(value != ''){
+        return value
+      }
+    })
+
+    
+    /* for(i in reference){
+      if(typeof userData === 'array'){
+        //console.log('typeof userData ok ')
         if(reference[i].Id === userData[search]){
-        
+          
+          //console.log('reference[i].Id === userData[search] ok ')
           return reference[i].Name
           
         }  
@@ -113,10 +136,11 @@ export const emailValidation = dados => {
       
       if(reference[i].Id === userData){
         
+        //console.log('reference[i].Id === userData ok ')
         return reference[i].Name
         
       }
-    }
+    } */
   }
 
 export function getTelefones(data, type){
@@ -167,9 +191,9 @@ return(dados)
 
 export async function patchUser(id, body, UserKey){
 
-  /* console.log('id - ', id);
+  console.log('id - ', id);
   console.log('body - ', body);
-  console.log('UserKey - ', UserKey); */
+  console.log('UserKey - ', UserKey);
   
   
   var xhr = new XMLHttpRequest();
@@ -188,6 +212,26 @@ export async function patchUser(id, body, UserKey){
   
   xhr.send(JSON.stringify(body));
 
+}
+
+export async function deleteUser(id, UserKey){
+  //console.log(id)
+  var data = null;
+
+var xhr = new XMLHttpRequest();
+xhr.withCredentials = true;
+
+xhr.addEventListener("readystatechange", function () {
+  if (this.readyState === 4) {
+    //console.log(this.responseText);
+  }
+});
+
+xhr.open("DELETE", "https://api2-dev.ploomes.com/Contacts("+ id +")");
+xhr.setRequestHeader("User-Key", UserKey);
+xhr.setRequestHeader("Cache-Control", "no-cache");
+
+xhr.send(data);
 }
 
 

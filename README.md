@@ -15,7 +15,7 @@
 <ul>
   <li>Nome (*) (campo livre)</li>
   <li>Empresa (campo controlado, (api, da pra add))</li>
-  <li>Telefones (+)(campo controlado)/não controlado (opção usuário)</li>
+  <li>Telefones (+)(campo controlado)</li>
   <li>tipo telefone:(api, não dá pra add)</li>
   <li>Cargo (api, da pra add)</li>
   <li>Departamento (api, da pra add)</li>
@@ -37,13 +37,13 @@
   <li>Segmento (api, da pra add)</li>
   <li>Origem (api, da pra add)(do contato)</li>
   <li>CNPJ (campo controlado)</li>
-  <li>Telefones (+)(campo controlado)/não controlado (opção usuário)</li>
+  <li>Telefones (+)(campo controlado)</li>
   <li>tipo telefone:(api, não dá pra add)</li>
 </ul>
 
 <h4>Localização (col)</h4>
 <ul>
-  <li>Endereço (api google, auto complete(sugestoes))</li>
+  <li>Endereço (api com CEP e api app)</li>
   <li>Complemento</li>
   <li>Bairro</li>
   <li>CEP</li>
@@ -57,7 +57,6 @@
   <li>E-mail (campo livre)</li>
   <li>Site(campo Livre)</li>
   <li>Responsável (team)(sugestão membro equipe)</li>
-  <li>Relação (api, não da pra add)</li>
   <li>Obs (campo livre)</li>
 </ul>
 
